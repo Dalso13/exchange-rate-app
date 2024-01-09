@@ -8,22 +8,18 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  // 기준 통화
   String _baseCurrency = 'KRW';
-  // 대상 통화
   String _targetCurrency = 'USD';
-  // 기준 통화 금액
-  double _baseAmount = 1000.0;
-  // 대상 통화 금액
-  double _targetAmount = 0.0;
+
+  final TextEditingController baseController = TextEditingController();
+  final TextEditingController targetController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     final viewModel = context.watch<MainViewModel>();
-    final state = viewModel.state;
     return Scaffold(
       appBar: AppBar(
-        title: Text('환율 계산기'),
+        title: const Text('환율 계산기'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -31,70 +27,76 @@ class _MainScreenState extends State<MainScreen> {
           children: [
             // 기준 통화 금액 입력 필드
             TextField(
+              controller: baseController,
               keyboardType: TextInputType.number,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: '기준 통화 금액',
               ),
               onChanged: (value) {
-                _baseAmount = double.parse(value);
+                if (value.isNotEmpty) {
+                  viewModel.inputBaseMoney(double.parse(value));
+                  targetController.text = '${context.read<MainViewModel>().state.targetMoney}';
+                }
               },
             ),
             // 기준 통화 드롭다운 목록
             DropdownButton<String>(
               value: _baseCurrency,
               onChanged: (value) {
+                if (_targetCurrency == value) {
+                  _targetCurrency = _baseCurrency;
+                }
                 _baseCurrency = value!;
+                if (baseController.text.isNotEmpty &&
+                    targetController.text.isNotEmpty) {
+                    viewModel.inputBaseCode(_baseCurrency,_targetCurrency).then((value) {
+                      targetController.text = '${context.read<MainViewModel>().state.targetMoney}';
+                    });
+                }
               },
               items: [
-                DropdownMenuItem(
-                  value: 'KRW',
-                  child: Text('KRW'),
-                ),
-                DropdownMenuItem(
-                  value: 'USD',
-                  child: Text('USD'),
-                ),
-                DropdownMenuItem(
-                  value: 'EUR',
-                  child: Text('EUR'),
-                ),
-                DropdownMenuItem(
-                  value: 'JPY',
-                  child: Text('JPY'),
-                ),
+                getMenu('KRW'),
+                getMenu('USD'),
+                getMenu('EUR'),
+                getMenu('JPY'),
               ],
             ),
             // 대상 통화 금액 입력 필드
             TextField(
+              controller: targetController,
               keyboardType: TextInputType.number,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: '대상 통화 금액',
               ),
+              onChanged: (value) {
+                if (value.isNotEmpty) {
+                  viewModel.targetBaseMoney(
+                      double.parse(value));
+                  baseController.text = '${context.read<MainViewModel>().state.baseMoney}';
+                }
+              },
             ),
             // 대상 통화 드롭다운 목록
             DropdownButton<String>(
               value: _targetCurrency,
               onChanged: (value) {
+                if (_baseCurrency == value) {
+                  _baseCurrency = _targetCurrency;
+                }
                 _targetCurrency = value!;
-                _updateTargetAmount();
+
+                if (baseController.text.isNotEmpty &&
+                    targetController.text.isNotEmpty) {
+                  viewModel.inputBaseCode(_baseCurrency,_targetCurrency).then((value) {
+                    targetController.text = '${context.read<MainViewModel>().state.targetMoney}';
+                  });
+                }
               },
               items: [
-                DropdownMenuItem(
-                  value: 'KRW',
-                  child: Text('KRW'),
-                ),
-                DropdownMenuItem(
-                  value: 'USD',
-                  child: Text('USD'),
-                ),
-                DropdownMenuItem(
-                  value: 'EUR',
-                  child: Text('EUR'),
-                ),
-                DropdownMenuItem(
-                  value: 'JPY',
-                  child: Text('JPY'),
-                ),
+                getMenu('KRW'),
+                getMenu('USD'),
+                getMenu('EUR'),
+                getMenu('JPY'),
               ],
             ),
           ],
@@ -102,22 +104,10 @@ class _MainScreenState extends State<MainScreen> {
       ),
     );
   }
-
-  // 대상 통화 금액을 업데이트합니다.
-  void _updateTargetAmount() {
-    // 환율 정보를 가져옵니다.
-    double rate = _getRate(_baseCurrency, _targetCurrency);
-    // 대상 통화 금액을 계산합니다.
-    _targetAmount = _baseAmount * rate;
-    // 대상 통화 금액 입력 필드를 업데이트합니다.
-    setState(() {
-      _targetAmount = _targetAmount;
-    });
-  }
-
-  // 환율 정보를 가져옵니다.
-  double _getRate(String base, String target) {
-    // TODO: 실제 환율 정보를 가져오는 코드를 작성합니다.
-    return 1.0;
+  DropdownMenuItem<String> getMenu(String value) {
+    return DropdownMenuItem(
+      value: '$value',
+      child: Text('$value'),
+    );
   }
 }

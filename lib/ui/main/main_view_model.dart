@@ -8,6 +8,7 @@ class MainViewModel extends ChangeNotifier {
 
   MainState _state = const MainState();
 
+
   MainState get state => _state;
 
   MainViewModel({
@@ -22,17 +23,17 @@ class MainViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void inputBaseMoney(num baseMoney) {
+  void inputBaseMoney(num money) {
     _state = state.copyWith(
-      baseMoney: baseMoney,
-      targetMoney: baseMoney *
+      baseMoney: money,
+      targetMoney: money *
           state.rateResult!.rates[state.targetCode]!
     );
     notifyListeners();
   }
 
-  void inputBaseCode(String baseCode) async {
-    _state = state.copyWith(baseCode: baseCode);
+  Future<void> inputBaseCode(String baseCode, String targetCode) async {
+    _state = state.copyWith(baseCode: baseCode, targetCode: targetCode);
 
     await _updateRateResult(baseCode);
 
@@ -41,29 +42,17 @@ class MainViewModel extends ChangeNotifier {
           state.rateResult!.rates[state.targetCode]!
     );
 
+    inputBaseMoney(state.baseMoney);
     notifyListeners();
   }
 
-  void targetBaseMoney(num baseMoney) {
+  void targetBaseMoney(num money) {
     _state = state.copyWith(
-        targetMoney: baseMoney,
-        baseMoney: baseMoney /
+        targetMoney: money,
+        baseMoney: money /
             state.rateResult!.rates[state.targetCode]!
     );
     notifyListeners();
   }
 
-  void targetBaseCode(String baseCode) async {
-    _state = state.copyWith(baseCode: baseCode);
-
-    await _updateRateResult(baseCode);
-
-    _state = state.copyWith(
-        baseMoney: state.baseMoney /
-            state.rateResult!.rates[state.targetCode]!
-    );
-
-    notifyListeners();
-
-  }
 }
