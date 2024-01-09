@@ -1,4 +1,3 @@
-import 'package:currency_exchange/data/model/rate.dart';
 import 'package:currency_exchange/data/model/rate_result.dart';
 import 'package:currency_exchange/data/repository/rate_repository.dart';
 import 'package:currency_exchange/ui/main/main_view_model.dart';
@@ -240,8 +239,7 @@ class RateRepositoryMock implements RateRepository {
         final lastTimestamp = krwMockJson['time_last_update_unix'];
         return RateResult(
           baseCode: baseCode,
-          rates:
-          rates.entries.map((e) => Rate(code: e.key, rate: e.value)).toList(),
+          rates: rates,
           lastUpdateTime:
           DateTime.fromMillisecondsSinceEpoch((lastTimestamp as int) * 1000),
           nextUpdateTime:
@@ -257,8 +255,7 @@ class RateRepositoryMock implements RateRepository {
         final lastTimestamp = usdMockJson['time_last_update_unix'];
         return RateResult(
           baseCode: baseCode,
-          rates:
-          rates.entries.map((e) => Rate(code: e.key, rate: e.value)).toList(),
+          rates: rates,
           lastUpdateTime:
           DateTime.fromMillisecondsSinceEpoch((lastTimestamp as int) * 1000),
           nextUpdateTime:

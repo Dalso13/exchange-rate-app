@@ -30,7 +30,7 @@ class ExchangeRateDto {
   final String? baseCode;
 
 // 환율
-  final Map<String, double>? rates;
+  final Map<String, num>? rates;
 
   ExchangeRateDto({
     this.result,

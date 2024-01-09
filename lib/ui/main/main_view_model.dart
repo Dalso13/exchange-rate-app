@@ -26,9 +26,7 @@ class MainViewModel extends ChangeNotifier {
     _state = state.copyWith(
       baseMoney: baseMoney,
       targetMoney: baseMoney *
-          state.rateResult!.rates
-              .firstWhere((rate) => rate.code == state.targetCode)
-              .rate,
+          state.rateResult!.rates[state.targetCode]!
     );
     notifyListeners();
   }
@@ -40,9 +38,7 @@ class MainViewModel extends ChangeNotifier {
 
     _state = state.copyWith(
       targetMoney: state.baseMoney *
-          state.rateResult!.rates
-              .firstWhere((rate) => rate.code == state.targetCode)
-              .rate,
+          state.rateResult!.rates[state.targetCode]!
     );
 
     notifyListeners();
