@@ -1,4 +1,6 @@
+import 'package:currency_exchange/ui/main/main_view_model.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class MainScreen extends StatefulWidget {
   @override
@@ -17,6 +19,8 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final viewModel = context.watch<MainViewModel>();
+    final state = viewModel.state;
     return Scaffold(
       appBar: AppBar(
         title: Text('환율 계산기'),

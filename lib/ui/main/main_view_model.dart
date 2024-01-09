@@ -44,7 +44,26 @@ class MainViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void targetBaseMoney(num baseMoney) {}
+  void targetBaseMoney(num baseMoney) {
+    _state = state.copyWith(
+        targetMoney: baseMoney,
+        baseMoney: baseMoney /
+            state.rateResult!.rates[state.targetCode]!
+    );
+    notifyListeners();
+  }
 
-  void targetBaseCode(String baseCode) {}
+  void targetBaseCode(String baseCode) async {
+    _state = state.copyWith(baseCode: baseCode);
+
+    await _updateRateResult(baseCode);
+
+    _state = state.copyWith(
+        baseMoney: state.baseMoney /
+            state.rateResult!.rates[state.targetCode]!
+    );
+
+    notifyListeners();
+
+  }
 }
